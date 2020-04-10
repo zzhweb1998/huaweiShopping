@@ -1,0 +1,15 @@
+<template>
+    <div id="afterContent">
+        <router-view></router-view>
+    </div>
+</template>
+
+<style>
+    #afterContent{
+        width: 84%;
+        height: 100%;
+        float: left;
+        margin-left: 10px;
+        border: 1px solid #333;
+    }
+</style>

@@ -1,0 +1,165 @@
+<template>
+    <div id="frontHeader">
+        <div class="fh-left">
+            <span @click="firstPage">华为商城首页</span>
+        </div>
+        <div class="fh-right">
+            <span @click="login" v-show="loginIf==0">用户登陆</span>
+            <span @click="user" v-show="loginIf==1">{{userAccount}}</span>
+            <span @click="shopcar">购物车</span>
+            <span @click="orders">订单</span>
+            <div class="ui-Box">
+                <div></div>
+                <div class="ui-content">
+                    <p>账号：{{userInfo.user_account}}</p>
+                    <p>余额：{{userInfo.user_price}}</p>
+                    <p>会员等级：{{userInfo.user_Grade}}</p>
+                    <button @click="exitAccount">退出</button>
+                </div>
+            </div>
+        </div>
+        <div class="fh-bg"></div>
+    </div>
+</template>
+
+<script>
+    export default {
+        data() {
+            return {
+                userAccount: '',
+                loginIf: 0,
+                userInfo: ''
+            }
+        },
+        created() {
+            this.userAccount = sessionStorage.getItem('account')
+            if (this.userAccount == '' || this.userAccount == null) {
+                this.loginIf = 0
+            } else {
+                this.loginIf = 1
+                this.axios.post("/api/shop/userInfo", {
+                    account: this.userAccount
+                }).then(res => {
+                    this.userInfo = res.data[0]
+                })
+            }
+        },
+        methods: {
+            login() {
+                this.$router.push('/userLogin')
+            },
+            user() {
+                this.$router.push('/user/userDetailed')
+            },
+            shopcar() {
+                if (this.loginIf == 1) {
+                    this.$router.push('/user/userDetailed/userShopcar')
+                } else {
+                    this.$router.push('/userLogin')
+                }
+            },
+            orders() {
+                if (this.loginIf == 1) {
+                    this.$router.push('/user/userDetailed/userOrders')
+                } else {
+                    this.$router.push('/userLogin')
+                }
+            },
+            firstPage() {
+                this.$router.push('/user')
+            },
+            exitAccount() {
+                sessionStorage.setItem('account', '')
+                this.userAccount = sessionStorage.getItem('account')
+                if (this.userAccount == '' || this.userAccount == null) {
+                    this.loginIf = 0
+                } else {
+                    this.loginIf = 1
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    #frontHeader {
+        width: 100%;
+        height: 40px;
+        background: #333;
+    }
+
+    .fh-left {
+        float: left;
+        margin-top: 8px;
+    }
+
+    .fh-right {
+        position: relative;
+        float: right;
+        margin-top: 8px;
+    }
+
+    #frontHeader span {
+        color: #aaa;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    #frontHeader span:nth-of-type(n+3)::before {
+        content: '|';
+        margin-right: 10px;
+        font-size: 14px;
+        color: #999;
+    }
+
+    .fh-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background: #333;
+        z-index: -1;
+    }
+
+    .ui-Box {
+        position: absolute;
+        top: 15px;
+        right: 40px;
+        width: 250px;
+        height: 120px;
+        cursor: pointer;
+        z-index: 100;
+    }
+
+    .ui-Box>div:nth-of-type(1) {
+        width: 0px;
+        margin-left: 100px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #f9f9f9 rgba(0, 0, 0, 0);
+    }
+
+    .ui-content {
+        width: 100%;
+        height: 100px;
+        border: 1px solid;
+        border-color: #f9f9f9 #999 #999 #999;
+        background: #f9f9f9;
+    }
+
+    .ui-content>p {
+        font-size: 14px;
+        color: #333;
+        line-height: 20px;
+        margin-left: 20px;
+    }
+
+    .ui-content>button {
+        width: 80px;
+        height: 20px;
+        line-height: 15px;
+        margin-left: 160px;
+        margin-top: 10px;
+    }
+</style>
